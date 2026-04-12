@@ -104,6 +104,40 @@ Presenter - презентер содержит основную логику п
 
 ### Интерфейсы данных
 
+**IProduct** - интерфейс для описания карточки продукта. Поля:
+- `id` - уникальный идентификатор товара
+- `description` - описание товара
+- `image` - ссылка на изображение товара
+- `title` - название товара
+- `category` - категория товара (софт-скил, хард-скил, другое, дополнительное)
+- `price` - цена товара (может быть null, если товар недоступен)
+
+**IBuyer** - интерфейс для хранения данных покупателя. Поля:
+- `payment` - способ оплаты ('card' или 'cash')
+- `email` - электронная почта
+- `phone` - номер телефона
+- `address` - адрес доставки
+
+**IOrder** - интерфейс для отправки заказа на сервер. Поля:
+- `payment` - способ оплаты
+- `email` - электронная почта
+- `phone` - номер телефона
+- `address` - адрес доставки
+- `total` - общая стоимость заказа
+- `items` - массив id товаров в заказе
+
+**IProductsResponse** - интерфейс ответа сервера при получении каталога. Поля:
+- `total` - общее количество товаров
+- `items` - массив товаров
+
+**IOrderResponse** - интерфейс ответа сервера при оформлении заказа. Поля:
+- `id` - уникальный идентификатор заказа
+- `total` - общая стоимость заказа
+
+**TPayment** - тип данных для способа оплаты: 'card' | 'cash'
+
+**ErrorsBuyer** - тип для объекта с ошибками валидации данных покупателя
+
 ```typescript
 type TPayment = 'card' | 'cash';
 
@@ -179,16 +213,16 @@ interface IOrderResponse {
 Отвечает за хранение данных покупателя.
 
 **Поля:**
-- `_payment: TPayment | null` — способ оплаты
-- `_address: string` — адрес доставки
-- `_email: string` — email
-- `_phone: string` — телефон
+- `payment: TPayment | null` — способ оплаты
+- `address: string` — адрес доставки
+- `email: string` — email
+- `phone: string` — телефон
 
 **Методы:**
 - `setData(data: Partial<IBuyer>): void` — сохранить данные (частично или полностью)
 - `getData(): IBuyer` — получить все данные
 - `clear(): void` — очистить данные
-- `validate(): Partial<Record<keyof IBuyer, string>>` — валидация, возвращает объект с ошибками
+- `validate(): ErrorsBuyer` — валидация, возвращает объект с ошибками
 - `isFirstStepValid(): boolean` — проверка оплаты и адреса
 - `isSecondStepValid(): boolean` — проверка email и телефона
 
@@ -196,15 +230,10 @@ interface IOrderResponse {
 
 ### Класс LarekApi
 
-Отвечает за взаимодействие с сервером. Использует композицию — принимает экземпляр класса `Api` в конструкторе.
+Отвечает за взаимодействие с сервером. Использует композицию — принимает экземпляр интерфейса `IApi` в конструкторе.
 
-**Конструктор:** `constructor(_api: Api)`
+**Конструктор:** `constructor(_api: IApi)`
 
 **Методы:**
 - `getProducts(): Promise<IProductsResponse>` — GET запрос на `/product`, возвращает товары с сервера
 - `postOrder(order: IOrder): Promise<IOrderResponse>` — POST запрос на `/order`, отправляет заказ
-
-### Тип ErrorsBuyer
-
-```typescript
-type ErrorsBuyer = Partial<Record<keyof IBuyer, string>>;
