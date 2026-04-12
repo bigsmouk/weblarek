@@ -203,3 +203,8 @@ interface IOrderResponse {
 **Методы:**
 - `getProducts(): Promise<IProductsResponse>` — GET запрос на `/product`, возвращает товары с сервера
 - `postOrder(order: IOrder): Promise<IOrderResponse>` — POST запрос на `/order`, отправляет заказ
+
+### Тип ErrorsBuyer
+
+```typescript
+type ErrorsBuyer = Partial<Record<keyof IBuyer, string>>;
