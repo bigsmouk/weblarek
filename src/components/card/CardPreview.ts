@@ -1,39 +1,26 @@
-import { Component } from '../base/Component';
-import { IEvents } from '../base/Events';
+import { Card } from '../Card';
 import { IProduct } from '../../types';
 import { categoryMap } from '../../utils/constants';
 import { CDN_URL } from '../../utils/constants';
 
-export class CardPreview extends Component<IProduct> {
-    protected title: HTMLElement;
-    protected price: HTMLElement;
+export class CardPreview extends Card<IProduct> {
     protected description: HTMLElement;
     protected category: HTMLElement;
     protected image: HTMLImageElement;
     protected button: HTMLButtonElement;
-    protected events: IEvents;
 
-    constructor(container: HTMLElement, events: IEvents) {
+    constructor(container: HTMLElement, onAction: () => void) {
         super(container);
-        this.events = events;
-        this.title = container.querySelector('.card__title') as HTMLElement;
-        this.price = container.querySelector('.card__price') as HTMLElement;
         this.description = container.querySelector('.card__text') as HTMLElement;
         this.category = container.querySelector('.card__category') as HTMLElement;
         this.image = container.querySelector('.card__image') as HTMLImageElement;
         this.button = container.querySelector('.card__button') as HTMLButtonElement;
         
-        this.button.addEventListener('click', () => {
-            const id = this.container.getAttribute('data-id');
-            if (id) {
-                events.emit('card:action', { id });
-            }
-        });
+        this.button.addEventListener('click', onAction);
     }
 
     setData(data: IProduct): void {
-        this.setText(this.title, data.title);
-        this.setText(this.price, data.price !== null ? `${data.price} синапсов` : 'Недоступно');
+        super.setData(data);
         this.setText(this.description, data.description);
         this.setText(this.category, data.category);
         this.setImage(this.image, CDN_URL + data.image, data.title);
@@ -52,8 +39,7 @@ export class CardPreview extends Component<IProduct> {
     }
 
     setButtonText(isInCart: boolean): void {
-        if (this.button) {
-            this.button.textContent = isInCart ? 'Удалить из корзины' : 'Купить';
-        }
+        this.button.textContent = isInCart ? 'Удалить из корзины' : 'Купить';
+        this.button.removeAttribute('disabled');
     }
 }

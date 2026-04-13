@@ -1,29 +1,24 @@
 import { Component } from './base/Component';
-import { IEvents } from './base/Events';
 
 export class Form<T> extends Component<T> {
     protected form: HTMLFormElement;
     protected submitButton: HTMLButtonElement;
     protected errors: HTMLElement;
-    protected events: IEvents;
 
-    constructor(container: HTMLElement, events: IEvents) {
+    constructor(container: HTMLElement, onSubmit: () => void, onChange: (field: string, value: string) => void) {
         super(container);
-        this.events = events;
         this.form = container as HTMLFormElement;
         this.submitButton = container.querySelector('.button') as HTMLButtonElement;
         this.errors = container.querySelector('.form__errors') as HTMLElement;
 
         this.form.addEventListener('input', (e) => {
             const target = e.target as HTMLInputElement;
-            const field = target.name;
-            const value = target.value;
-            this.events.emit('form:change', { field, value });
+            onChange(target.name, target.value);
         });
 
         this.form.addEventListener('submit', (e) => {
             e.preventDefault();
-            this.events.emit('form:submit');
+            onSubmit();
         });
     }
 
@@ -34,21 +29,10 @@ export class Form<T> extends Component<T> {
         });
     }
 
-    getData(): T {
-        const formData = new FormData(this.form);
-        const data = {} as T;
-        formData.forEach((value, key) => {
-            (data as any)[key] = value;
-        });
-        return data;
-    }
-
-    setErrors(errors: Partial<Record<keyof T, string>>): void {
-        const errorMessages = Object.values(errors).filter(Boolean).join(', ');
+    setErrors(errors: string): void {
         if (this.errors) {
-            this.errors.textContent = errorMessages;
+            this.errors.textContent = errors;
         }
-        this.setValid(Object.keys(errors).length === 0);
     }
 
     setValid(valid: boolean): void {

@@ -1,35 +1,24 @@
-import { Component } from '../base/Component';
-import { IEvents } from '../base/Events';
+import { Card } from '../Card';
 import { IProduct } from '../../types';
 
-export class CardBasket extends Component<IProduct> {
-    protected title: HTMLElement;
-    protected price: HTMLElement;
+export class CardBasket extends Card<IProduct> {
     protected index: HTMLElement;
     protected button: HTMLButtonElement;
-    protected events: IEvents;
 
-    constructor(container: HTMLElement, events: IEvents) {
+    constructor(container: HTMLElement, onRemove: (id: string) => void) {
         super(container);
-        this.events = events;
-        this.title = container.querySelector('.card__title') as HTMLElement;
-        this.price = container.querySelector('.card__price') as HTMLElement;
         this.index = container.querySelector('.basket__item-index') as HTMLElement;
         this.button = container.querySelector('.card__button') as HTMLButtonElement;
         
         this.button.addEventListener('click', () => {
             const id = this.container.getAttribute('data-id');
-            events.emit('basket:remove', { id });
+            if (id) onRemove(id);
         });
     }
 
-    setData(data: IProduct): void {
-        this.setText(this.title, data.title);
-        this.setText(this.price, data.price !== null ? `${data.price} синапсов` : 'Недоступно');
-        this.container.setAttribute('data-id', data.id);
-    }
-
-    setIndex(index: number): void {
+    setData(data: IProduct, index: number): void {
+        super.setData(data);
         this.setText(this.index, String(index));
+        this.container.setAttribute('data-id', data.id);
     }
 }
