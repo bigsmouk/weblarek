@@ -237,3 +237,110 @@ interface IOrderResponse {
 **Методы:**
 - `getProducts(): Promise<IProductsResponse>` — GET запрос на `/product`, возвращает товары с сервера
 - `postOrder(order: IOrder): Promise<IOrderResponse>` — POST запрос на `/order`, отправляет заказ
+
+## Слой представления (View)
+
+Классы представления отвечают за отображение интерфейса. Они не хранят данные, а только отображают их и генерируют события.
+
+### Иерархия классов
+
+Component (базовый класс)
+├── Modal — управление модальным окном
+├── Form<T> — базовый класс для форм
+│ ├── OrderForm — форма первого шага (оплата + адрес)
+│ └── ContactsForm — форма второго шага (email + телефон)
+├── Card<T> — базовый класс для карточек товара
+│ ├── CardCatalog — карточка на главной странице
+│ ├── CardPreview — карточка в модальном окне (детальный просмотр)
+│ └── CardBasket — карточка товара в корзине
+├── Basket — корзина (список товаров, общая сумма, кнопка оформления)
+└── Success — сообщение об успешной оплате
+
+### Класс Modal
+
+Отвечает за открытие и закрытие модального окна.
+
+**Поля:**
+- `modal: HTMLElement` — корневой элемент модального окна
+- `content: HTMLElement` — контейнер для содержимого
+- `closeButton: HTMLElement` — кнопка закрытия
+
+**Методы:**
+- `open(): void` — открыть модальное окно
+- `close(): void` — закрыть модальное окно
+- `setContent(content: HTMLElement): void` — установить содержимое
+
+**События:**
+- `modal:open` — при открытии модального окна
+- `modal:close` — при закрытии модального окна
+
+### Класс Form<T>
+
+Базовый класс для форм. Дженерик T — тип данных формы.
+
+**Поля:**
+- `form: HTMLFormElement` — элемент формы
+- `submitButton: HTMLButtonElement` — кнопка отправки
+- `errors: HTMLElement` — контейнер для ошибок
+
+**Методы:**
+- `setData(data: Partial<T>): void` — заполнить поля формы
+- `getData(): T` — получить данные формы
+- `setErrors(errors: Partial<Record<keyof T, string>>): void` — показать ошибки
+- `setValid(valid: boolean): void` — активность кнопки отправки
+
+**События:**
+- `form:submit` — при отправке формы
+- `form:change` — при изменении любого поля
+
+### Класс Card<T>
+
+Базовый класс для карточки товара. Дженерик T — тип данных карточки.
+
+**Поля:**
+- `element: HTMLElement` — корневой элемент карточки
+- `title: HTMLElement` — заголовок
+- `price: HTMLElement` — цена
+- `button: HTMLButtonElement` — кнопка действия
+
+**Методы:**
+- `setData(data: T): void` — заполнить карточку данными
+- `setDisabled(disabled: boolean): void` — заблокировать кнопку
+
+**События:**
+- `card:click` — клик по карточке
+- `card:action` — клик по кнопке (купить/удалить)
+
+### Класс Basket
+
+Отвечает за отображение корзины.
+
+**Поля:**
+- `list: HTMLElement` — контейнер для списка товаров
+- `total: HTMLElement` — элемент с общей стоимостью
+- `button: HTMLButtonElement` — кнопка оформления
+
+**Методы:**
+- `setItems(items: HTMLElement[]): void` — установить список карточек
+- `setTotal(total: number): void` — установить общую стоимость
+- `setDisabled(disabled: boolean): void` — активность кнопки
+
+**События:**
+- `basket:open` — клик по иконке корзины
+- `basket:order` — клик по кнопке оформления
+
+### Класс Success
+
+Отвечает за отображение сообщения об успешной оплате.
+
+**Поля:**
+- `element: HTMLElement` — корневой элемент
+- `closeButton: HTMLElement` — кнопка закрытия
+- `total: HTMLElement` — элемент с суммой
+
+**Методы:**
+- `setTotal(total: number): void` — установить сумму
+- `close(): void` — закрыть окно
+
+**События:**
+- `success:close` — закрытие окна успеха

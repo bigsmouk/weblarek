@@ -6,7 +6,12 @@ export abstract class Component<T> {
         // Учитывайте что код в конструкторе исполняется ДО всех объявлений в дочернем классе
     }
 
-    // Инструментарий для работы с DOM в дочерних компонентах
+    // Установить текст
+    protected setText(element: HTMLElement, value: string): void {
+        if (element) {
+            element.textContent = value;
+        }
+    }
 
     // Установить изображение с альтернативным текстом
     protected setImage(element: HTMLImageElement, src: string, alt?: string) {
