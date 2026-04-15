@@ -30,7 +30,8 @@ export class CardPreview extends Card<IProduct> {
             this.category.classList.add(categoryClass);
         }
         
-        this.container.setAttribute('data-id', data.id);
+        // Удали эту строку:
+        // this.container.setAttribute('data-id', data.id);
         
         if (data.price === null) {
             this.button.setAttribute('disabled', 'disabled');
