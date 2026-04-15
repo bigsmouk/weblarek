@@ -6,21 +6,19 @@ import { CDN_URL } from '../../utils/constants';
 export class CardCatalog extends Card<IProduct> {
     protected category: HTMLElement;
     protected image: HTMLImageElement;
-    private productId: string = '';
 
-    constructor(container: HTMLElement, onClick: (id: string) => void) {
+    constructor(container: HTMLElement, onClick: () => void) {
         super(container);
         this.category = container.querySelector('.card__category') as HTMLElement;
         this.image = container.querySelector('.card__image') as HTMLImageElement;
         
         container.addEventListener('click', () => {
-            if (this.productId) onClick(this.productId);
+            onClick();
         });
     }
 
     setData(data: IProduct): void {
         super.setData(data);
-        this.productId = data.id;
         this.setText(this.category, data.category);
         this.setImage(this.image, CDN_URL + data.image, data.title);
         

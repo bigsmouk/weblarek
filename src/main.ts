@@ -49,8 +49,8 @@ function updateBasketView() {
     const cards = cartModel.getItems().map((product, index) => {
         const cardTemplate = document.querySelector('#card-basket') as HTMLTemplateElement;
         const cardElement = cardTemplate.content.firstElementChild?.cloneNode(true) as HTMLElement;
-        const card = new CardBasket(cardElement, (id: string) => {
-            cartModel.removeItem(id);
+        const card = new CardBasket(cardElement, () => {
+            cartModel.removeItem(product.id);
         });
         card.setData(product, index + 1);
         return card.render();
@@ -116,12 +116,9 @@ events.on('products:changed', () => {
     const cards = productsModel.getItems().map(product => {
         const cardTemplate = document.querySelector('#card-catalog') as HTMLTemplateElement;
         const cardElement = cardTemplate.content.firstElementChild?.cloneNode(true) as HTMLElement;
-        const card = new CardCatalog(cardElement, (id: string) => {
-            const product = productsModel.getProductById(id);
-            if (product) {
-                productsModel.setSelectedProduct(product);
-                events.emit('card:selected');
-            }
+        const card = new CardCatalog(cardElement, () => {
+            productsModel.setSelectedProduct(product);
+            events.emit('card:selected');
         });
         card.setData(product);
         return card.render();
